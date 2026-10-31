@@ -10,10 +10,14 @@
 
 using namespace AMDAM79C973Driver;
 using namespace MaxOS::KPI;
+using namespace MaxOS::KPI::hardware;
+using namespace MaxOS::KPI::processes;
 using namespace MaxOS;
 using namespace LibDriver;
 using namespace LibDriver::generic;
 using namespace LibDriver::HardwareCommunication;
+
+//@todo speed up start up
 
 extern "C" void _start(int argc, char* argv[])
 {
@@ -27,16 +31,21 @@ extern "C" void _start(int argc, char* argv[])
 	device_identification_t device = get_device_identification(id);
 	AMD_AM79C973 am79c973(device, hmap);
 
-	// Wait for events
-	EthernetServer server(&am79c973);
-	driver_ready(id);
+    // Start servers
+	EthernetServer driver_server(&am79c973);
+    UserInterruptServer irq_server(&am79c973);
+    driver_server.open(id);
 
+	// Wait for events
+	driver_ready(id);
     while (true) {
 
-        // handle driver server
-	    server.start(id);
+        // Process any server events
+        bool did_work = driver_server.process_next();
+        did_work |= irq_server.poll();
 
-        // handle irqs
-
+        // Dont busy wait
+        if (!did_work)
+            yield();
     }
 }
