@@ -1,0 +1,2 @@
+MAKE_PROG_NOSTD(AMDAM79C973Driver src driver)
+TARGET_LINK_LIBRARIES(AMDAM79C973Driver.elf driver kpi net)
