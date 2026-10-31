@@ -30,5 +30,13 @@ extern "C" void _start(int argc, char* argv[])
 	// Wait for events
 	EthernetServer server(&am79c973);
 	driver_ready(id);
-	server.start(id);
+
+    while (true) {
+
+        // handle driver server
+	    server.start(id);
+
+        // handle irqs
+
+    }
 }
