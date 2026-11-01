@@ -20,6 +20,8 @@
 #include <libkpi/processes/thread.h>
 #include <libcommon/assert.h>
 
+#include "libdriver/server/ethernet_server.h"
+
 namespace AMDAM79C973Driver {
 
     enum DescriptorFlags : uint32_t {
@@ -82,7 +84,7 @@ namespace AMDAM79C973Driver {
 	 * @class AMD_AM79C973
 	 * @brief Driver for the AMD AM79C973 Ethernet Controller
 	 */
-	class AMD_AM79C973 : public LibDriver::generic::Ethernet, public MaxOS::KPI::hardware::UserInterruptHandler {
+	class AMD_AM79C973 : public LibDriver::generic::Ethernet, public MaxOS::KPI::hardware::UserInterruptHandler, public LibDriver::generic::EthernetServer{
 
 		private:
 
@@ -100,13 +102,13 @@ namespace AMDAM79C973Driver {
 
 			initialisation_block_t init_block = {};
 
-			buffer_descriptor_t* send_buffer_descr;
+			buffer_descriptor_t* send_buffer_descr = {};
 			uint8_t send_buffers[2 * 1024 + 15][8] = {};
-			uint8_t current_send_buffer;
+			uint8_t current_send_buffer = {};
 
-			buffer_descriptor_t* recv_buffer_descr;
+			buffer_descriptor_t* recv_buffer_descr = {};
 			uint8_t recv_buffers[2 * 1024 + 15][8] { };
-			uint8_t current_recv_buffer;
+			uint8_t current_recv_buffer = {};
 
 			LibNet::address::mac_t own_mac = {0};
 			volatile bool active;

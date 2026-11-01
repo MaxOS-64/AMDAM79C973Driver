@@ -23,6 +23,7 @@ using namespace KPI::processes;
  */
 AMD_AM79C973::AMD_AM79C973(LibDriver::device_identification_t& device_id, LibDriver::HardwareCommunication::hardware_mapping_t& hmap)
 : UserInterruptHandler(hmap.irq),
+  EthernetServer(this),
   mac_address_0_port(hmap.ranges[0].address_base),
   mac_address_2_port(hmap.ranges[0].address_base + 0x02),
   mac_address_4_port(hmap.ranges[0].address_base + 0x04),
@@ -235,7 +236,8 @@ void AMD_AM79C973::fetch_data_received() {
                 size -= 4;
 
             auto* buffer = (uint8_t*) descriptor.address;
-            //@todo: fire_data_received(buffer, size); (also copy so can hand back right away?
+            fire_on_data_received({buffer, size});
+            //@todo: (also copy so can hand back right away?
 
         }
 
